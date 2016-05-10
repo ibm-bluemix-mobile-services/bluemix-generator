@@ -1,16 +1,23 @@
-# bluegen
+# Backend Template Generator for Bluemix
 
 ![](readme/bluegen.gif)
 
 ## CLI
 
 ```sh
-$ npm install -g bluegen
+$ npm install -g bluemix-generator
 $ bluegen
 ```
+## About
+
+The Backend Template Generator for Bluemix, `bluegen`, is a cross-platform tool developed by the CORD team to quickly generate complex backends for samples and templates using IBM Bluemix. The tool provisions requested services, populates them with user-defined data, scaffolds template code, and provides a `manifest.yml` file for easy deployment to Bluemix.
+
+In addition, `bluegen` supports event-based custom service handlers that let a developer customize his or her template to suit the needs of their specific use case.
+
+**Note:** `bluegen` is not intended for production environments
 
 ## Specifications
-`bluegen` (bluemix generator) is an under-development npm package that dynamically generates backends in IBM Bluemix with requested services and populates them with user-defined data, scaffolds template code in Node.js, Swift, etc., automatically includes a `manifest.yml` file in the newly created project for easy deployment to Bluemix, and adds the ability to define custom service handlers to be executed after the provisioning of each service. For `bluegen` to work, the template repository must be in the following format:
+For `bluegen` to work, the template repository must be in the following format:
 
     data/ (optional)
     template/
