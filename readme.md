@@ -1,4 +1,4 @@
-# Backend Template Generator for Bluemix
+# Bluemix Backend Generator
 
 ![](readme/bluegen.gif)
 
@@ -10,7 +10,7 @@ $ bluegen
 ```
 ## About
 
-The Backend Template Generator for Bluemix, `bluegen`, is a cross-platform tool developed by the CORD team to quickly generate complex backends for samples and templates using IBM Bluemix. The tool provisions requested services, populates them with user-defined data, scaffolds template code, and provides a `manifest.yml` file for easy deployment to Bluemix.
+The Backend Backend Generator, or `bluegen`, is a cross-platform tool developed by the CORD team to quickly generate complex backends for samples and templates using IBM Bluemix. The tool provisions requested services, populates them with user-defined data, scaffolds template code, and provides a `manifest.yml` file for easy deployment to Bluemix.
 
 In addition, `bluegen` supports event-based custom service handlers that let a developer customize his or her template to suit the needs of the specific use case.
 
