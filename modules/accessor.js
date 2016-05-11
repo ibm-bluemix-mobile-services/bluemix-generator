@@ -16,6 +16,9 @@
 
 	module.exports = function (config) {
 		return {
+			toJSON: function () {
+				return config;
+			},
 			get: function (name) {
 				return _.get(config, name);
 			}

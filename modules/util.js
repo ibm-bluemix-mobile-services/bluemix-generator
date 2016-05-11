@@ -12,9 +12,31 @@
  */
 
 (function (module) {
-	var _ = require('lodash');
+	var fs = require('fs'),
+		_ = require('lodash');
 
 	module.exports = {
+		fileExists: function (path) {
+			return new Promise(function (resolve, reject) {
+				fs.exists(path, function (exists) {
+					if (exists) {
+						return resolve(path);
+					}
+
+					reject();
+				})
+			});
+		},
+		createMetadataDirectory: function (path) {
+			var dir = path + '/.generator';
+			return this.fileExists(dir).catch(function(){
+				return new Promise(function(resolve){
+					fs.mkdir(dir, function () {
+						resolve(dir);
+					});
+				})
+			});
+		},
 		validateAppName: function (name) {
 			if (!name.match(/^[^-][a-z0-9-]+[^-]$/g)) {
 				return Promise.resolve(-1);

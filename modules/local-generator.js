@@ -13,6 +13,7 @@
 
 (function (module) {
 	var memFs = require('mem-fs'),
+		util = require('./util'),
 		editor = require('mem-fs-editor'),
 		yaml = require('json2yaml'),
 		store = memFs.create(),
@@ -31,19 +32,35 @@
 		};
 
 		this.root = process.cwd();
+		this.boundServices = [];
 	}
 
 	LocalGenerator.prototype.addService = function (service) {
 		this.manifest.services.push(service);
 	};
 
-	LocalGenerator.prototype.createProject = function () {
+	LocalGenerator.prototype.bindServices = function (service) {
+		this.boundServices.push(service);
+	};
+
+	LocalGenerator.prototype.createProject = function (config) {
+
+		var configuration = config.toJSON();
+		configuration.services = this.boundServices;
+
 		return new Promise(function (resolve) {
 			fs.copy(this.root + '/template/', this.getProjectPath());
 			fs.copy(this.root + '/template/.*', this.getProjectPath());
-			fs.commit(function () {
-				resolve();
-			});
+
+			util.createMetadataDirectory(this.getProjectPath()).then(function (path) {
+				fs.write(path + '/generator.json', JSON.stringify(configuration));
+
+				fs.commit(function () {
+					resolve();
+				});
+			}.bind(this));
+
+
 		}.bind(this));
 	};
 

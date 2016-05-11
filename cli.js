@@ -32,6 +32,7 @@ var inquirer = require('inquirer'),
 	userConfig = {},
 	userHome = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'],
 	util = require('./modules/util'),
+	flowGenerate = require('./flow/generate'),
 	regions = require('./config/regions');
 
 var bluemix = Bluemix({root: userHome, endpoint: endpointConfig});
@@ -41,7 +42,15 @@ serviceManager.registerHandler('Object-Storage', require('./handlers/object-stor
 
 serviceManager.registerTemplateHandler(appHome, chalk);
 
-environmentValidation({root: userHome, home: appHome}).then(function (config) {
+environmentValidation({root: userHome, home: appHome}).then(function (environment) {
+	if (environment.status === 0) {
+		return flowGenerate(environment.config);
+	} else if (environment.status === 1) {
+		return Promise.reject('TODO: implement data reload.')
+	} else {
+		return Promise.reject('Please navigate to a valid bluegen template folder');
+	}
+}).then(function (config) {
 	templateConfig = config;
 
 	return serviceManager.fireEvent('validation');
@@ -302,6 +311,10 @@ environmentValidation({root: userHome, home: appHome}).then(function (config) {
 				});
 			}).then(function (credentials) {
 
+				var boundServiceInstance = service;
+				boundServiceInstance.credentials = credentials;
+				generator.bindServices(boundServiceInstance);
+
 				return serviceManager.fireEvent('service', util.serviceInstance(service, credentials)).then(function () {
 					return serviceManager.run(service, credentials, function (message) {
 						flasher.stop();
@@ -348,7 +361,7 @@ environmentValidation({root: userHome, home: appHome}).then(function (config) {
 		return Promise.resolve(generator);
 	});
 }).then(function (generator) {
-	return generator.createProject().then(function () {
+	return generator.createProject(templateConfig).then(function () {
 		return generator.createManifest();
 	}).then(function () {
 		return serviceManager.fireEvent('complete', {home: generator.getProjectPath()});
