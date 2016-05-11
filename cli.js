@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 /*
- Copyright 2016 IBM Corp.
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-        http://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-*/
+ * Copyright 2016 IBM Corp.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 
 var inquirer = require('inquirer'),
 	chalk = require("chalk"),
@@ -28,17 +28,19 @@ var inquirer = require('inquirer'),
 	templateConfig = null,
 	environmentValidation = require('./modules/environment-validation'),
 	appHome = process.cwd(),
-	bluemix = Bluemix(require('./config/endpoint')),
+	endpointConfig = require('./config/endpoint'),
 	userConfig = {},
 	util = require('./modules/util'),
 	regions = require('./config/regions');
+
+var bluemix = Bluemix({root: __dirname, endpoint: endpointConfig});
 
 serviceManager.registerHandler('cloudantNoSQLDB', require('./handlers/cloudant'));
 serviceManager.registerHandler('Object-Storage', require('./handlers/object-storage'));
 
 serviceManager.registerTemplateHandler(appHome, chalk);
 
-environmentValidation(appHome).then(function (config) {
+environmentValidation({root: __dirname, home: appHome}).then(function (config) {
 	templateConfig = config;
 
 	return serviceManager.fireEvent('validation');
@@ -62,36 +64,43 @@ environmentValidation(appHome).then(function (config) {
 
 	inquirer.registerPrompt('asyncList', require('./modules/async-prompt'));
 
+	return bluemix.authenticateWithToken().catch(function () {
+		return bluemix.refreshToken();
+	}).catch(function () {
+		return inquirer.prompt([
+			{
+				type: 'input',
+				name: 'username',
+				filter: function (username) {
+					return userConfig.username = username;
+				},
+				message: 'What is your Bluemix username?',
+				validate: function (username) {
+					if (username === "" || username === "exit" || username === "quit") {
+						console.log("\n\nThanks for stopping by!");
+						process.exit(1);
+					}
+					return true;
+				}
+			},
+			{
+				type: 'password',
+				name: 'password',
+				message: 'What is your Bluemix password?',
+				filter: function (password) {
+					return bluemix.login(userConfig.username, password);
+				},
+				validate: function (password) {
+					if (!password) {
+						return 'Failed to login to Bluemix. Please try again.';
+					}
+					return true;
+				}
+			}
+		]);
+	});
+}).then(function () {
 	return inquirer.prompt([
-		{
-			type: 'input',
-			name: 'username',
-			filter: function (username) {
-				return userConfig.username = username;
-			},
-			message: 'What is your Bluemix username?',
-			validate: function (username) {
-				if (username === "" || username === "exit" || username === "quit") {
-					console.log("\n\nThanks for stopping by!");
-					process.exit(1);
-				}
-				return true;
-			}
-		},
-		{
-			type: 'password',
-			name: 'password',
-			message: 'What is your Bluemix password?',
-			filter: function (password) {
-				return bluemix.login(userConfig.username, password);
-			},
-			validate: function (password) {
-				if (!password) {
-					return 'Failed to login to Bluemix. Please try again.';
-				}
-				return true;
-			}
-		},
 		{
 			type: 'asyncList',
 			pull: function () {

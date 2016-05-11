@@ -1,21 +1,19 @@
 /*
- Copyright 2016 IBM Corp.
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-        http://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-*/
+ * Copyright 2016 IBM Corp.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 
 (function (module) {
 	var fs = require('fs'),
-		_ = require('lodash'),
-		// 30 minutes
-		TTL = 30 * 60 * 1000;
+		_ = require('lodash');
 
 	function Cache(path) {
 		this.path = path;
@@ -40,23 +38,10 @@
 		}.bind(this));
 	};
 
-	Cache.prototype.isValid = function () {
+	Cache.prototype.read = function () {
 		return this.exists().then(function () {
 			return this.load();
-		}.bind(this)).then(function (config) {
-
-			if (!_.has(config, 'timestamp')) {
-				return Promise.reject();
-			}
-
-			var lastupdate = new Date(config.timestamp);
-
-			if ((new Date()).getTime() - lastupdate.getTime() > TTL) {
-				return Promise.reject();
-			}
-
-			return Promise.resolve(config);
-		});
+		}.bind(this));
 	};
 
 
