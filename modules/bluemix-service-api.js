@@ -21,6 +21,10 @@
 		this.api.setOAuthToken(token);
 	};
 
+	BluemixServiceApi.prototype.updateEndpoint = function (endpoint) {
+		this.api.updateEndpoint(endpoint);
+	};
+
 	BluemixServiceApi.prototype.login = function (username, password) {
 		return this.api.authenticate('password', username, password);
 	};

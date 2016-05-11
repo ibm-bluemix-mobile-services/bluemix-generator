@@ -103,9 +103,29 @@ environmentValidation({root: userHome, home: appHome}).then(function (config) {
 }).then(function () {
 	return inquirer.prompt([
 		{
+			type: 'list',
+			name: 'region',
+			message: 'What is your region?',
+			choices: regions
+		}
+	]);
+}).then(function (response) {
+
+	bluemix.api().updateEndpoint({
+		api: _.get(response, 'region')
+	});
+
+	return bluemix.api().getOrganizations();
+}).then(function (orgs) {
+	if (orgs.length === 0) {
+		return Promise.reject('You don\'t have any organizations in this region. Please create a new org or select a different region.');
+	}
+
+	return inquirer.prompt([
+		{
 			type: 'asyncList',
 			pull: function () {
-				return bluemix.api().getOrganizations();
+				return orgs;
 			},
 			filter: function (org) {
 				return userConfig.org = org;
@@ -148,12 +168,6 @@ environmentValidation({root: userHome, home: appHome}).then(function (config) {
 
 				return 'Sorry, that name already exists. Please try another name.';
 			}
-		},
-		{
-			type: 'list',
-			name: 'region',
-			message: 'What is your region?',
-			choices: regions
 		}
 	]);
 

@@ -12,13 +12,24 @@
  */
 
 (function (module) {
-	var request = require('superagent');
+	var request = require('superagent'),
+		_ = require('lodash');
 
 	function HttpClient(config) {
 		this.api = config.api;
 		this.auth = config.auth;
 		this.token = null;
 	}
+
+	HttpClient.prototype.updateEndpoint = function (config) {
+		if(_.has(config, 'api')) {
+			this.api = config.api;
+		}
+
+		if(_.has(config, 'auth')) {
+			this.auth = config.auth;
+		}
+	};
 
 	HttpClient.prototype.authenticate = function (grantType, username, password) {
 		return new Promise(function (resolve, reject) {
