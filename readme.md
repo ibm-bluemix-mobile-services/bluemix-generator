@@ -85,7 +85,7 @@ service.type
 
 #### Custom Service Handlers
 
-Custom service handlers are also optionally supported, so you can specify actions to be taken after a specific service is provisioned by modifying the `generator.js`.
+Custom service handlers are also optionally supported, so you can specify actions to be taken after a specific service is provisioned by adding a `generator.js`.
 
 There are currently four events that are triggered:
 
