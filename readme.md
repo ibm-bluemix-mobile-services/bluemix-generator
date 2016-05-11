@@ -1,4 +1,6 @@
 # Bluemix Backend Generator
+[![npm version](https://badge.fury.io/js/bluemix-generator.svg)](https://badge.fury.io/js/bluemix-generator)
+[![dependencies](https://david-dm.org/ibm-bluemix-mobile-services/bluemix-generator.svg?theme=shields.io)](https://david-dm.org/ibm-bluemix-mobile-services/bluemix-generator)
 
 ![](readme/bluegen.gif)
 
