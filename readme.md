@@ -81,9 +81,25 @@ service.description
 service.type
 ```
 
-> **Note:** Currently the only built in service handlers are for **Cloudant NoSQL DB** and **Object Storage**.
+> **Note:** Currently the only built in service handlers are for **Cloudant NoSQL DB** and **Object Storage**
+
+#### Custom Service Handlers
 
 Custom service handlers are also optionally supported, so you can specify actions to be taken after a specific service is provisioned by modifying the `generator.js`.
+
+There are currently four events that are triggered:
+
+1. **validation:**
+The validation event is triggered immediately when the application is started. It can be used to verify the user's environment.
+
+2. **preferences:**
+The preferences event is triggered after a user goes through the interactive prompt. It contains data like the organization, space, and application name.
+
+3. **service:**
+The service event is triggered immediately after each service specified in the configuration file is provisioned. It contains the service credentials that Bluemix returns for that particular service.
+
+4. **complete:**
+The complete event triggers after the template is set up and services provisioned. Here we can specify instructions for how the user should run the new project.
 
 Below is a sample `generator.js` file:
 
@@ -174,9 +190,7 @@ Below is a sample `generator.js` file:
 })(module);
 ```
 
-The `generator.js` has event triggers using Promises allowing custom JavaScript code to execute during the template generation.
-
-For the above sample, we provide custom triggers on validation to make sure the user has API Connect installed, an event on the service provisioning using the keys returned to generate custom files, and finally directions that the user can follow after the backend has reached completion.
+For the above sample, we provide custom triggers on validation to make sure the user has API Connect installed, an event on the service provisioning using the keys returned to generate custom files, and finally directions that the user can follow after the backend has reached the complete event.
 
 ### License
 This package contains sample code provided in source code form. The samples are licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the license in the license file within this package.
