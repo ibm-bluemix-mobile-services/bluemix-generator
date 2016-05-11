@@ -30,17 +30,18 @@ var inquirer = require('inquirer'),
 	appHome = process.cwd(),
 	endpointConfig = require('./config/endpoint'),
 	userConfig = {},
+	userHome = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'],
 	util = require('./modules/util'),
 	regions = require('./config/regions');
 
-var bluemix = Bluemix({root: __dirname, endpoint: endpointConfig});
+var bluemix = Bluemix({root: userHome, endpoint: endpointConfig});
 
 serviceManager.registerHandler('cloudantNoSQLDB', require('./handlers/cloudant'));
 serviceManager.registerHandler('Object-Storage', require('./handlers/object-storage'));
 
 serviceManager.registerTemplateHandler(appHome, chalk);
 
-environmentValidation({root: __dirname, home: appHome}).then(function (config) {
+environmentValidation({root: userHome, home: appHome}).then(function (config) {
 	templateConfig = config;
 
 	return serviceManager.fireEvent('validation');
@@ -156,7 +157,9 @@ environmentValidation({root: __dirname, home: appHome}).then(function (config) {
 		}
 	]);
 
-}).then(function (preferences) {
+}).then(function (userResponse) {
+
+	var preferences = _.merge(userResponse, userConfig);
 
 	flasher.progress('Synchronizing Bluemix Services');
 
