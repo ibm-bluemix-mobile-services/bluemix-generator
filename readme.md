@@ -63,7 +63,7 @@ Below is a sample `generator.json` file:
 }
 ```
 
-For your `generator.json` to be valid, it requires:
+For your `generator.json` to be valid, it requires the following fields:
 
 ```
 app.name
@@ -73,7 +73,7 @@ runtime.name
 runtime.description
 ```
 
-For each service to be valid, it requires:
+For each service to be valid, it requires the following fields:
 ```
 service.name
 service.deployname
