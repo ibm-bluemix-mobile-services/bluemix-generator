@@ -26,7 +26,8 @@
 
 	var userConfig = {};
 
-	module.exports = function (templateConfig, serviceManager, bluemix) {
+	module.exports = function (templateConfig, serviceManager, bluemix, userResponse) {
+		userConfig = _.merge(userResponse, userConfig);
 		return inquirer.prompt([
 			{
 				type: 'list',

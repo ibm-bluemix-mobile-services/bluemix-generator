@@ -119,8 +119,8 @@ Below is a sample `generator.js` file:
 		app.events.on('validation', function (event, resolve, reject) {
 			exec('which apic', function (error, stdout) {
 				if (stdout.trim().length === 0) {
-					return reject('Please install the API Connect CLI.\n' +
-						'To install, type the command `npm install -g apiconnect` in your terminal.');
+					console.log(app.text.bold.yellow('[warning] ') + 'To run this sample locally, please install the API Connect CLI.\n'+
+						'To install, type the command `npm install -g apiconnect` in your terminal.\n');
 				}
 
 				resolve();
@@ -159,16 +159,29 @@ Below is a sample `generator.js` file:
 				return saveFile(path + 'env.json', JSON.stringify(services));
 			}).then(function () {
 				console.log('Finished copying template\n');
-				console.log('Your project has been created at ' + app.text.yellow('projects/') + app.text.yellow(config.app.name) + '\n');
+				console.log('Your project has been created at ' + app.text.yellow('projects/') + app.text.yellow(config.app.get('name')) + '\n');
 				console.log('Next steps:\n');
-				console.log('  Navigate to your project directory');
-				console.log(app.text.green('    $ cd ') + app.text.yellow('projects/') + app.text.yellow(config.app.name) + '\n');
+				console.log('  First, navigate to your project directory');
+				console.log(app.text.green('    $ cd ') + app.text.yellow('projects/') + app.text.yellow(config.app.get('name')) + '\n');
 				console.log('  Upload your backend to Bluemix');
-				console.log(app.text.green('    $ cf login -a ') + app.text.yellow(config.app.region) + app.text.green(' -u ') + app.text.yellow(config.app.username) + app.text.green(' -o ') +  app.text.yellow(config.app.org.name) + app.text.green(' -s ') +  app.text.yellow(config.app.space.name));
+
+				var loginCmd = app.text.green('    $ cf login -a ') + app.text.yellow(config.app.get('region'));
+				if(config.app.get('username', false)) {
+					loginCmd += app.text.green(' -u ') + app.text.yellow(config.app.get('username', false));
+				} else {
+					loginCmd += app.text.green(' -u [USERNAME]');
+				}
+
+				loginCmd += app.text.green(' -o ') +  app.text.yellow(config.app.get('org.name')) + app.text.green(' -s ') +  app.text.yellow(config.app.get('space.name'));
+
+				console.log(loginCmd);
+
 				console.log(app.text.green('    $ cf push\n'));
-				console.log('  Compose your API, run, manage, enforce, and deploy it with API Connect');
+				console.log('  Compose your API, run, manage, enforce, and deploy it with API Connect locally');
 				console.log(app.text.green('    $ npm install'));
 				console.log(app.text.green('    $ apic edit\n'));
+				console.log('  Reload data to Cloudant NoSQL DB and Object Storage');
+				console.log(app.text.green('    $ bluegen\n'));
 			}).catch(function (e) {
 				console.log('  ' + app.text.red.bold('error'), e);
 				resolve();
@@ -191,6 +204,12 @@ Below is a sample `generator.js` file:
 ```
 
 For the above sample, we provide custom triggers on validation to make sure the user has API Connect installed, an event on the service provisioning using the keys returned to generate custom files, and finally directions that the user can follow after the backend has reached the complete event.
+
+#### Reload data to Cloudant NoSQL DB and Object Storage
+
+Simply run the command `bluegen` inside your project directory to reload data to **Cloudant NoSQL DB** and **Object Storage**.
+
+![](readme/reload.gif)
 
 ### License
 This package contains sample code provided in source code form. The samples are licensed under the Apache License, Version 2.0 (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 and may also view the license in the license file within this package.
