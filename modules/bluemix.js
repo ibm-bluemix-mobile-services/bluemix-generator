@@ -59,17 +59,6 @@
 					return authenticationCache.save(response);
 				});
 			},
-			exist: function (name) {
-				return new Promise(function (resolve) {
-					request.get("http://" + name + "." + config.endpoint.host).end(function (err, res) {
-						if (!err && res.statusCode === 200) {
-							return resolve(false);
-						}
-						resolve(name);
-					});
-				});
-			},
-
 			login: function (username, password) {
 				return api.login(username, password).then(function (response) {
 					api.setOAuthToken(response.access_token);
