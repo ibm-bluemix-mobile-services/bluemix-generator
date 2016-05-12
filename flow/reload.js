@@ -27,9 +27,27 @@
 		var runner = new FastRunner(templateConfig.get('services'));
 
 		return runner.run(function (service) {
-			flasher.log(chalk.cyan.bold(service.name));
-			flasher.progress("Initiating ");
-			return serviceManager.fireEvent('service', util.serviceInstance(service, service.credentials)).then(function () {
+
+
+			return inquirer.prompt([
+				{
+					type: 'confirm',
+					name: 'run',
+					message: 'Would you like to redeploy data for ' + service.name
+				}
+			]).then(function (response) {
+
+				flasher.log(chalk.cyan.bold(service.name));
+
+				if (response.run) {
+					flasher.progress("Initiating ");
+
+					return serviceManager.fireEvent('service', util.serviceInstance(service, service.credentials));
+				}
+
+				flasher.log('Did not redeploy data for ' + service.name);
+				return Promise.reject(1);
+			}).then(function () {
 				return serviceManager.run(service, service.credentials, function (message) {
 					flasher.stop();
 
@@ -45,6 +63,10 @@
 				return Promise.resolve();
 			}).catch(function (error) {
 				flasher.stop();
+
+				if(error === 1) {
+					return Promise.resolve();
+				}
 
 				return serviceManager.handleFailure(service, error, function (message) {
 
