@@ -27,15 +27,17 @@
 				})
 			});
 		},
-		createMetadataDirectory: function (path) {
-			var dir = path + '/.generator';
-			return this.fileExists(dir).catch(function(){
+		createDirectory: function (path) {
+			return this.fileExists(path).catch(function(){
 				return new Promise(function(resolve){
-					fs.mkdir(dir, function () {
-						resolve(dir);
+					fs.mkdir(path, function () {
+						resolve(path);
 					});
 				})
 			});
+		},
+		createMetadataDirectory: function (path) {
+			return this.createDirectory(path + '/.generator');
 		},
 		validateAppName: function (name) {
 			if (!name.match(/^[^-][a-z0-9-]+[^-]$/g)) {

@@ -51,6 +51,7 @@
 		return new Promise(function (resolve) {
 			fs.copy(this.root + '/template/', this.getProjectPath());
 			fs.copy(this.root + '/template/.*', this.getProjectPath());
+			fs.copy(this.root + '/data/', this.getProjectPath() + '/data');
 
 			util.createMetadataDirectory(this.getProjectPath()).then(function (path) {
 				fs.write(path + '/generator.json', JSON.stringify(configuration));
@@ -59,13 +60,12 @@
 					resolve();
 				});
 			}.bind(this));
-
-
 		}.bind(this));
 	};
 
 	LocalGenerator.prototype.createManifest = function () {
 		return new Promise(function (resolve, reject) {
+
 			fs.write(this.getProjectPath() + '/manifest.yml', yaml.stringify(this.manifest));
 			fs.commit(function () {
 				resolve();

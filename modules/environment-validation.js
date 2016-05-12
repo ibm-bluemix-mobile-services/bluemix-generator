@@ -41,13 +41,13 @@
 
 		function isTemplateDirectory() {
 			return util.fileExists(config.home + '/generator.json').catch(function () {
-				return Promise.reject('Please navigate to a valid appbuilder directory');
+				return Promise.reject('Please navigate to a valid template directory');
 			});
 		}
 
 		function isProjectDirectory() {
 			return util.fileExists(config.home + '/.generator/generator.json').catch(function () {
-				return Promise.reject('Please navigate to a valid appbuilder directory');
+				return Promise.reject('Please navigate to a valid template directory');
 			});
 		}
 
@@ -138,147 +138,15 @@
 					return validateGenerator(path);
 				});
 			}).then(function (config) {
-				return {status: 0, config: config};
+				return {status: 'generate', config: config};
 			}).catch(function () {
 				return isProjectDirectory().then(function (path) {
 					return validateGenerator(path);
 				}).then(function (config) {
-					return {status: 1, config: config};
+					return {status: 'reload', config: config};
 				});
 			});
 		});
 
 	};
 })(module);
-
-//(function (module) {
-//	var exec = require('child_process').exec,
-//		_ = require('lodash'),
-//		accessor = require('./accessor'),
-//		util = require('./util'),
-//		fs = require('fs');
-//
-//	module.exports = function (config) {
-//
-//		function makeMetadataDirectory() {
-//			return util.createMetadataDirectory(config.root).then(function(){
-//				return util.createMetadataDirectory(config.home);
-//			});
-//		}
-//
-//		function isCloudFoundryInstalled() {
-//			return new Promise(function (resolve, reject) {
-//				exec("which cf", function (error, stdout) {
-//					if (stdout.trim().length === 0) {
-//						return reject('Please install the Cloud Foundry CLI.\n' +
-//							'To install, visit and follow the directions from the official https://github.com/cloudfoundry/cli repository.')
-//					}
-//
-//					resolve();
-//				})
-//			});
-//		}
-//
-//		function isValidDirectory() {
-//			return new Promise(function (resolve, reject) {
-//				fs.exists(config.home + '/generator.json', function (exists) {
-//					if (exists) {
-//						return resolve();
-//					}
-//
-//					return reject('Please navigate to a valid appbuilder directory');
-//				});
-//			});
-//		}
-//
-//		function generatorError(message) {
-//			return 'Invalid generator.json: ' + message;
-//		}
-//
-//		function isConfigMissingProperties(generator) {
-//			var errors = [];
-//
-//			if (!_.has(generator, 'app.name')) {
-//				errors.push('app.name');
-//			}
-//
-//			if (!_.has(generator, 'app.description')) {
-//				errors.push('app.description');
-//			}
-//
-//			if (!_.has(generator, 'runtime.name')) {
-//				errors.push('runtime.name');
-//			}
-//
-//			if (!_.has(generator, 'runtime.description')) {
-//				errors.push('runtime.description');
-//			}
-//
-//			if (errors.length > 0) {
-//				return Promise.reject(generatorError(errors.join(', ') + ' ' + verb(errors) + ' missing'));
-//			}
-//
-//			return Promise.resolve();
-//		}
-//
-//		function verb(count) {
-//			if (_.isArray(count)) {
-//				count = count.length;
-//			}
-//
-//			return count > 1 ? 'are' : 'is';
-//		}
-//
-//		function areConfigServicesOK(generator) {
-//			if (_.has(generator, 'services') && _.isArray(generator.services)) {
-//
-//				var errors = [];
-//
-//
-//				_.forEach(generator.services, function (service, index) {
-//					var prefix = 'service[' + index + ']';
-//
-//					if (!_.has(service, 'name')) {
-//						errors.push(prefix + '.name');
-//					}
-//					if (!_.has(service, 'deployname')) {
-//						errors.push(prefix + '.deployname');
-//					}
-//					if (!_.has(service, 'description')) {
-//						errors.push(prefix + '.description');
-//					}
-//					if (!_.has(service, 'type')) {
-//						errors.push(prefix + '.type');
-//					}
-//				});
-//
-//				if (errors.length > 0) {
-//					return Promise.reject(generatorError(errors.join(', ') + ' ' + verb(errors) + ' missing'));
-//				}
-//
-//				return Promise.resolve();
-//			}
-//
-//			return Promise.resolve();
-//		}
-//
-//		function validateGenerator() {
-//			var generator = require(config.home + '/generator.json');
-//
-//			return isConfigMissingProperties(generator).then(function () {
-//				return areConfigServicesOK(generator);
-//			}).then(function () {
-//				return Promise.resolve(accessor(generator));
-//			});
-//		}
-//
-//
-//		return isValidDirectory().then(function () {
-//			return makeMetadataDirectory();
-//		}).then(function () {
-//			return isCloudFoundryInstalled();
-//		}).then(function () {
-//			return validateGenerator();
-//		});
-//	};
-//})(module);
