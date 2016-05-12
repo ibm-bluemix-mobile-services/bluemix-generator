@@ -81,7 +81,7 @@ service.description
 service.type
 ```
 
-> **Note:** Currently the only built in service handlers are for **Cloudant NoSQL DB** and **Object Storage**
+> **Note:** Currently the only built-in service handlers are for **Cloudant NoSQL DB** and **Object Storage**
 
 #### Custom Service Handlers
 
