@@ -207,7 +207,7 @@ For the above sample, we provide custom triggers on validation to make sure the 
 
 #### Reload data to Cloudant NoSQL DB and Object Storage
 
-Simply run the command `bluegen` inside your project directory to reload data to Cloudant NoSQL DB and Object Storage.
+Simply run the command `bluegen` inside your project directory to reload data to **Cloudant NoSQL DB** and **Object Storage**.
 
 ![](readme/reload.gif)
 
