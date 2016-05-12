@@ -65,13 +65,13 @@ environmentValidation({root: userHome, home: appHome}).then(function (environmen
 		flasher.stop();
 		flasher.progress('Authenticating');
 		return flowAuthenticate(environment.config, serviceManager, bluemix);
-	}).then(function () {
+	}).then(function (authParams) {
 		flasher.stop();
 
 		if (environment.status === 'generate') {
-			return flowGenerate(environment.config, serviceManager, bluemix);
+			return flowGenerate(environment.config, serviceManager, bluemix, authParams);
 		} else if (environment.status === 'reload') {
-			return flowReload(environment.config, serviceManager, bluemix);
+			return flowReload(environment.config, serviceManager);
 		} else {
 			return Promise.reject('Please navigate to a valid bluegen template folder');
 		}
