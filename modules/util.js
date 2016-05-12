@@ -13,6 +13,7 @@
 
 (function (module) {
 	var fs = require('fs'),
+		accessor = require('./accessor');
 		_ = require('lodash');
 
 	module.exports = {
@@ -49,7 +50,7 @@
 			return Promise.resolve(name);
 		},
 		appConfig: function (userPreferences) {
-			return {
+			return accessor({
 				username: _.get(userPreferences, 'username'),
 				region: _.get(userPreferences, 'region'),
 				org: {
@@ -61,7 +62,7 @@
 					guid: _.get(userPreferences, 'space.guid')
 				},
 				name: _.get(userPreferences, 'name')
-			}
+			});
 		},
 		serviceInstance: function (service, credentials) {
 			return _.merge(service, {

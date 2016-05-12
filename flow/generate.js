@@ -36,6 +36,8 @@
 			}
 		]).then(function (response) {
 
+			userConfig = _.merge(response, userConfig);
+
 			bluemix.api().updateEndpoint({
 				api: _.get(response, 'region')
 			});

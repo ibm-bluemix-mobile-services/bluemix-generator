@@ -19,8 +19,8 @@
 			toJSON: function () {
 				return config;
 			},
-			get: function (name) {
-				return _.get(config, name);
+			get: function (name, std) {
+				return _.get(config, name, std);
 			}
 		}
 	};
