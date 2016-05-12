@@ -27,6 +27,7 @@
 		return bluemix.authenticateWithToken().catch(function () {
 			return bluemix.refreshToken();
 		}).catch(function () {
+			flasher.stop();
 			return inquirer.prompt([
 				{
 					type: 'input',
