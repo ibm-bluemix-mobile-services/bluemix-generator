@@ -153,6 +153,8 @@
 								return Promise.reject(-1);
 							}
 
+							flasher.progress('Fetching service details for ' + service.name);
+
 							return bluemix.api().getServiceInstanceDetails(guid);
 						}).then(function (serviceDetails) {
 
@@ -178,9 +180,6 @@
 					}
 
 					return useExistingServiceExecutor.then(function (config) {
-
-						flasher.stop();
-
 						if (config) {
 							return Promise.resolve(config);
 						}
@@ -278,6 +277,7 @@
 					});
 				});
 			}).then(function () {
+				flasher.stop();
 				return Promise.resolve(generator);
 			});
 		}).then(function (generator) {
