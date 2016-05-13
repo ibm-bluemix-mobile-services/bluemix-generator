@@ -41,7 +41,7 @@
 			return this.createDirectory(path + '/.generator');
 		},
 		validateAppName: function (name) {
-			if (!name.match(/^[^-][a-z0-9-]+[^-]$/g)) {
+			if (!name.match(/^[^-][a-zA-Z0-9-]+[^-]$/g)) {
 				return Promise.resolve(-1);
 			} else if (name.length > 63) {
 				return Promise.resolve(-2);

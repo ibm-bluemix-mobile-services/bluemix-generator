@@ -14,27 +14,21 @@
 (function (module) {
 
 	var _ = require("lodash"),
-		request = require('superagent'),
 		Cache = require('./cache'),
 		BluemixApiClient = require('./bluemix-api-client.js'),
 		BluemixServiceApi = require('./bluemix-service-api.js');
 
 	module.exports = function (config) {
 
-		if (!_.has(config, 'endpoint.url')) {
-			throw  new Error('missing `url` object');
-		} else if (!_.has(config, 'endpoint.url.auth')) {
-			throw new Error('missing `url.auth` key');
-		} else if (!_.has(config, 'endpoint.url.api')) {
-			throw new Error('missing `url.api` key');
-		} else if (!_.has(config, 'endpoint.host')) {
-			throw new Error('missing `host` key');
+		if (!_.has(config, 'endpoint.api')) {
+			throw  new Error('missing `api` endpoint');
+		} else if (!_.has(config, 'endpoint.auth')) {
+			throw new Error('missing `auth` endpoint');
 		} else if (!_.has(config, 'root')) {
 			throw new Error('missing `root` key');
 		}
 
-
-		var api = new BluemixServiceApi(new BluemixApiClient(config.endpoint.url));
+		var api = new BluemixServiceApi(new BluemixApiClient(config.endpoint));
 
 		var authenticationCache = new Cache(config.root + '/.generator/token');
 
