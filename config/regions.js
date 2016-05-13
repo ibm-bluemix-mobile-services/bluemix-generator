@@ -14,14 +14,18 @@
 module.exports = [
 	{
 		name: 'US South',
-		value: 'https://api.ng.bluemix.net'
+		api: 'https://api.ng.bluemix.net',
+		domain: 'mybluemix.net'
+
 	},
 	{
 		name: 'United Kingdom',
-		value: 'https://api.eu-gb.bluemix.net'
+		api: 'https://api.eu-gb.bluemix.net',
+		domain: 'eu-gb.mybluemix.net'
 	},
 	{
 		name: 'Sydney',
-		value: 'https://api.au-syd.bluemix.net'
+		api: 'https://api.au-syd.bluemix.net',
+		domain: 'au-syd.mybluemix.net'
 	}
 ];

@@ -19,12 +19,12 @@
 		store = memFs.create(),
 		fs = editor.create(store);
 
-	function LocalGenerator(appName) {
+	function LocalGenerator(appName, domain) {
 		this.manifest = {
 			"path": ".",
 			"memory": "512M",
 			"instances": 1,
-			"domain": "mybluemix.net",
+			"domain": domain,
 			"name": appName,
 			"host": appName,
 			"disk_quota": "1024M",

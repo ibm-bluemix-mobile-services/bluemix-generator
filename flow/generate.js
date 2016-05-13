@@ -30,17 +30,19 @@
 		userConfig = _.merge(userResponse, userConfig);
 		return inquirer.prompt([
 			{
-				type: 'list',
+				type: 'asyncList',
 				name: 'region',
 				message: 'What is your region?',
-				choices: regions
+				pull: function () {
+					return regions;
+				}
 			}
 		]).then(function (response) {
 
 			userConfig = _.merge(response, userConfig);
 
 			bluemix.api().updateEndpoint({
-				api: _.get(response, 'region')
+				api: _.get(response, 'region.api')
 			});
 
 			return bluemix.api().getOrganizations();
@@ -107,7 +109,7 @@
 
 			var sync = new ServiceSync(bluemix.api()),
 				prefs = accessor(preferences),
-				generator = new LocalGenerator(prefs.get('name'));
+				generator = new LocalGenerator(prefs.get('name'), prefs.get('region.domain'));
 
 			return serviceManager.fireEvent('preferences', util.appConfig(preferences)).then(function () {
 				var serviceConfig = _.cloneDeep(templateConfig.get('services'));

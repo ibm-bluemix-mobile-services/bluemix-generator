@@ -12,9 +12,6 @@
  */
 
 module.exports = {
-	url: {
-		api: 'http://api.ng.bluemix.net',
-		auth: 'https://login.ng.bluemix.net',
-	},
-	host: 'mybluemix.net'
+	api: 'http://api.ng.bluemix.net',
+	auth: 'https://login.ng.bluemix.net'
 };
