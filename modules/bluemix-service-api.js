@@ -157,7 +157,7 @@
 			"parameters": {},
 			"tags": []
 		}).then(function (response) {
-			return this.createServiceKeys(response.body.metadata.guid, name + '-credentials');
+			return response.body;
 		}.bind(this));
 	};
 
