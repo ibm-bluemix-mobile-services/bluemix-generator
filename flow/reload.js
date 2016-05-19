@@ -74,7 +74,7 @@
 
 					flasher.progress(message);
 
-				}).then(function () {
+				}).then(function (message) {
 					flasher.stop();
 
 					if (message) {

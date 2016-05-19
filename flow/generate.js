@@ -170,7 +170,9 @@
 							if (serviceCredentials.keys.length === 0) {
 								var serviceKeyName = prefs.get('name') + '-' + service.deployname + '-credentials';
 
-								return bluemix.api().createServiceKeys(serviceCredentials.service.guid, serviceKeyName);
+								return bluemix.api().createServiceKeys(serviceCredentials.service.guid, serviceKeyName).catch(function(error){
+									return {};
+								});
 							}
 
 							return Promise.resolve(serviceCredentials.keys[0]);
@@ -230,6 +232,12 @@
 							generator.addService(serviceName);
 
 							return bluemix.api().createServiceInstance(prefs.get('space.guid'), plan.guid, serviceName);
+						}).then(function (response) {
+							var serviceName = prefs.get('name') + '-' + service.deployname;
+
+							return bluemix.api().createServiceKeys(response.metadata.guid, serviceName + '-credentials').catch(function(error){
+								return {};
+							});
 						});
 					}).then(function (credentials) {
 
@@ -262,7 +270,7 @@
 
 							flasher.progress(message);
 
-						}).then(function () {
+						}).then(function (message) {
 							flasher.stop();
 
 							if (message) {

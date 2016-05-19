@@ -13,42 +13,23 @@
 
 
 (function (module) {
-	var pkgcloud = require('pkgcloud-bluemix-objectstorage'),
+	var pkgcloud = require('pkgcloud'),
 		fs = require('fs');
 
 	function ObjectStorage(container, credentials) {
 		this.container = container;
 
 		this.config = {
-			authUrl: credentials.auth_url,
-			region: credentials.region,
-			tenantId: credentials.projectId,
-			userId: credentials.userId,
-			username: credentials.username,
-			password: credentials.password,
 			provider: 'openstack',
 			useServiceCatalog: true,
 			useInternal: false,
-			auth: {
-				forceUri: credentials.auth_url + '/v3/auth/tokens',
-				interfaceName: 'public',
-				identity: {
-					methods: [
-						'password'
-					],
-					password: {
-						user: {
-							id: credentials.userId,
-							password: credentials.password
-						}
-					}
-				},
-				scope: {
-					project: {
-						id: credentials.projectId
-					}
-				}
-			}
+			keystoneAuthVersion: 'v3',
+			authUrl: credentials.auth_url,
+			tenantId: credentials.projectId,
+			domainId: credentials.domainId,
+			username: credentials.username,
+			password: credentials.password,
+			region: credentials.region
 		};
 
 		this.client = pkgcloud.storage.createClient(this.config);

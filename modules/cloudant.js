@@ -21,7 +21,7 @@
 
 	Cloudant.prototype.dropDatabase = function () {
 		return new Promise(function (resolve) {
-			request.del(this.credentials.host + "/" + this.database)
+			request.del(this.credentials.host + '/' + this.database)
 				.auth(this.credentials.username, this.credentials.password)
 				.end(function () {
 					resolve();
@@ -32,14 +32,13 @@
 	Cloudant.prototype.createDatabase = function () {
 		return new Promise(function (resolve, reject) {
 			request
-				.put(this.credentials.host + "/" + this.database)
+				.put(this.credentials.host + '/' + this.database)
 				.auth(this.credentials.username, this.credentials.password)
 				.end(function (err, res) {
 					if (!err && res.statusCode === 201) {
 						resolve();
-					}
-					else {
-						reject("Couldn't create new database.");
+					} else {
+						reject('Couldn\'t create new database. [' + res.statusCode + ': ' + res.statusMessage + ']');
 					}
 				});
 		}.bind(this));
