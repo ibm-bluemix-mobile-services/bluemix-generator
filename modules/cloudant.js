@@ -38,7 +38,7 @@
 					if (!err && res.statusCode === 201) {
 						resolve();
 					} else {
-						reject('Couldn\'t create new database. [' + res.statusCode + ': ' + res.statusMessage + ']');
+						reject('Couldn\'t create new database. [' + res.statusCode + ': ' + res.body.reason + ']');
 					}
 				});
 		}.bind(this));

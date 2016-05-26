@@ -83,7 +83,7 @@
 					message: 'What do you want to name this backend?',
 					filter: function (answer) {
 						return util.validateAppName(answer).then(function (name) {
-							return bluemix.api().checkName(name);
+							return bluemix.api().checkName(name, userConfig.region.guid);
 						});
 					},
 					validate: function (value) {

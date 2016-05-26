@@ -33,8 +33,8 @@
 		return this.api.authenticate('refresh_token', token);
 	};
 
-	BluemixServiceApi.prototype.checkName = function (name) {
-		return this.api.get('/v2/routes/reserved/domain/f4b90d7e-2cd3-4d30-b200-f28bbaf6be20/host/' + name).then(function(response) {
+	BluemixServiceApi.prototype.checkName = function (name, guid) {
+		return this.api.get('/v2/routes/reserved/domain/' + guid + '/host/' + name).then(function(response) {
 			return -3;
 		}).catch(function(error) {
 			return name;

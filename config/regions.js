@@ -15,17 +15,19 @@ module.exports = [
 	{
 		name: 'US South',
 		api: 'https://api.ng.bluemix.net',
-		domain: 'mybluemix.net'
-
+		domain: 'mybluemix.net',
+		guid: 'f4b90d7e-2cd3-4d30-b200-f28bbaf6be20'
 	},
 	{
 		name: 'United Kingdom',
 		api: 'https://api.eu-gb.bluemix.net',
-		domain: 'eu-gb.mybluemix.net'
+		domain: 'eu-gb.mybluemix.net',
+		guid: '75049093-13e9-4520-80a6-2d6fea6542bc'
 	},
 	{
 		name: 'Sydney',
 		api: 'https://api.au-syd.bluemix.net',
-		domain: 'au-syd.mybluemix.net'
+		domain: 'au-syd.mybluemix.net',
+		guid: '76f331d2-93e5-4472-ae1b-26bae85d381a'
 	}
 ];
