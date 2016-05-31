@@ -2,7 +2,7 @@
   "name": "bluemix-generator",
   "appName": "Bluemix Backend Generator",
   "version": "0.2.8",
-  "description": "Easily generate backend templates in Bluemix!",
+  "description": "This module generates backend templates using IBM Bluemix",
   "main": "cli.js",
   "scripts": {},
   "bin": {
@@ -39,6 +39,6 @@
     "node-status": "^0.1.7",
     "pkgcloud": "^1.3.0",
     "run-async": "^2.2.0",
-    "superagent": "^1.8.3"
+    "superagent": "^2.0.0"
   }
 }
