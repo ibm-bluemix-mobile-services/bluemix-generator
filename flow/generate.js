@@ -83,7 +83,7 @@
 					message: 'What do you want to name this backend?',
 					filter: function (answer) {
 						return util.validateAppName(answer).then(function (name) {
-							return bluemix.api().checkName(name);
+							return bluemix.api().checkName(name, userConfig.region.guid);
 						});
 					},
 					validate: function (value) {
@@ -161,7 +161,9 @@
 							return bluemix.api().getServiceInstanceDetails(guid);
 						}).then(function (serviceDetails) {
 
-							generator.addService(serviceDetails.name);
+							if (_.get(service, "bindable", true)) {
+								generator.addService(serviceDetails.name);
+							}
 
 							return bluemix.api().getServiceKeys(serviceDetails.guid).then(function (serviceKeys) {
 								return Promise.resolve({keys: serviceKeys, service: serviceDetails})
@@ -229,7 +231,9 @@
 
 							flasher.progress("Provisioning " + service.name);
 
-							generator.addService(serviceName);
+							if (_.get(service, "bindable", true)) {
+								generator.addService(serviceName);
+							}
 
 							return bluemix.api().createServiceInstance(prefs.get('space.guid'), plan.guid, serviceName);
 						}).then(function (response) {
@@ -243,6 +247,7 @@
 
 						var boundServiceInstance = service;
 						boundServiceInstance.credentials = credentials;
+
 						generator.bindServices(boundServiceInstance);
 
 						return serviceManager.fireEvent('service', util.serviceInstance(service, credentials)).then(function () {

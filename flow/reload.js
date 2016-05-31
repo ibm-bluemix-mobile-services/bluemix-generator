@@ -28,52 +28,31 @@
 
 		return runner.run(function (service) {
 
+			if (_.get(service, "redeploy", false)) {
+				return inquirer.prompt([
+					{
+						type: 'confirm',
+						name: 'run',
+						message: 'Would you like to redeploy data for ' + service.name
+					}
+				]).then(function (response) {
 
-			return inquirer.prompt([
-				{
-					type: 'confirm',
-					name: 'run',
-					message: 'Would you like to redeploy data for ' + service.name
-				}
-			]).then(function (response) {
+					flasher.log(chalk.cyan.bold(service.name));
 
-				flasher.log(chalk.cyan.bold(service.name));
+					if (response.run) {
+						flasher.progress("Initiating ");
 
-				if (response.run) {
-					flasher.progress("Initiating ");
+						return serviceManager.fireEvent('service', util.serviceInstance(service, service.credentials));
+					}
 
-					return serviceManager.fireEvent('service', util.serviceInstance(service, service.credentials));
-				}
+					flasher.log('Did not redeploy data for ' + service.name);
+					return Promise.reject(1);
+				}).then(function () {
+					return serviceManager.run(service, service.credentials, function (message) {
+						flasher.stop();
 
-				flasher.log('Did not redeploy data for ' + service.name);
-				return Promise.reject(1);
-			}).then(function () {
-				return serviceManager.run(service, service.credentials, function (message) {
-					flasher.stop();
-
-					flasher.progress(message);
-				});
-			}).then(function (message) {
-				flasher.stop();
-
-				if (message) {
-					flasher.log(message);
-				}
-
-				return Promise.resolve();
-			}).catch(function (error) {
-				flasher.stop();
-
-				if(error === 1) {
-					return Promise.resolve();
-				}
-
-				return serviceManager.handleFailure(service, error, function (message) {
-
-					flasher.stop();
-
-					flasher.progress(message);
-
+						flasher.progress(message);
+					});
 				}).then(function (message) {
 					flasher.stop();
 
@@ -81,15 +60,40 @@
 						flasher.log(message);
 					}
 
-					return Promise.resolve(message);
+					return Promise.resolve();
 				}).catch(function (error) {
 					flasher.stop();
 
-					var errorMessage = _.has(error, 'response.body.description') ? _.get(error, 'response.body.description') : error;
+					if(error === 1) {
+						return Promise.resolve();
+					}
 
-					return Promise.reject(errorMessage);
+					return serviceManager.handleFailure(service, error, function (message) {
+
+						flasher.stop();
+
+						flasher.progress(message);
+
+					}).then(function (message) {
+						flasher.stop();
+
+						if (message) {
+							flasher.log(message);
+						}
+
+						return Promise.resolve(message);
+					}).catch(function (error) {
+						flasher.stop();
+
+						var errorMessage = _.has(error, 'response.body.description') ? _.get(error, 'response.body.description') : error;
+
+						return Promise.reject(errorMessage);
+					});
 				});
-			});
+			}
+
+			return Promise.resolve();
+
 		});
 	};
 })(module);
