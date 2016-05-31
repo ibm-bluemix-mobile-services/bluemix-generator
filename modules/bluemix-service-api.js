@@ -75,6 +75,8 @@
 		return this.api.get('/v2/services?q=label:' + label).then(function (response) {
 			if (response.body.total_results == 1) {
 				return Promise.resolve(response.body.resources[0].metadata.guid);
+			} else if (response.body.total_results == 0) {
+				return Promise.reject('Can\'t find service on Bluemix -> ' + label);
 			} else {
 				return Promise.reject('Multiple services with label -> ' + label);
 			}
