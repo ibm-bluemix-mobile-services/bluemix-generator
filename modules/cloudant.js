@@ -37,6 +37,8 @@
 				.end(function (err, res) {
 					if (!err && res.statusCode === 201) {
 						resolve();
+					} else if (res.statusCode === 503) {
+						reject("The Cloudant NoSQL DB service is currently unavailable. Please try running bluegen again.")
 					} else {
 						reject('Couldn\'t create new database. [' + res.statusCode + ': ' + res.body.reason + ']');
 					}
