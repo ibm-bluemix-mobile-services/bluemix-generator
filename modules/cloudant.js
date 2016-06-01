@@ -34,6 +34,10 @@
 			request
 				.put(this.credentials.host + '/' + this.database)
 				.auth(this.credentials.username, this.credentials.password)
+				.send({
+					id: this.database,
+					name: this.database
+				})
 				.end(function (err, res) {
 					if (!err && res.statusCode === 201) {
 						resolve();
