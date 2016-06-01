@@ -28,27 +28,31 @@
 
 		return runner.run(function (service) {
 
+			var serviceName = _.get(service, 'name'),
+				serviceCredentials = _.get(service, 'credentials');
+
+
 			if (_.get(service, "redeploy", false)) {
 				return inquirer.prompt([
 					{
 						type: 'confirm',
 						name: 'run',
-						message: 'Would you like to redeploy data for ' + service.name
+						message: 'Would you like to redeploy data for ' + serviceName
 					}
 				]).then(function (response) {
 
-					flasher.log(chalk.cyan.bold(service.name));
+					flasher.log(chalk.cyan.bold(serviceName));
 
 					if (response.run) {
 						flasher.progress("Initiating ");
 
-						return serviceManager.fireEvent('service', util.serviceInstance(service, service.credentials));
+						return serviceManager.fireEvent('service', util.serviceInstance(service, serviceCredentials));
 					}
 
-					flasher.log('Did not redeploy data for ' + service.name);
+					flasher.log('Did not redeploy data for ' + serviceName);
 					return Promise.reject(1);
 				}).then(function () {
-					return serviceManager.run(service, service.credentials, function (message) {
+					return serviceManager.run(service, serviceCredentials, function (message) {
 						flasher.stop();
 
 						flasher.progress(message);
