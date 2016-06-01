@@ -12,16 +12,18 @@
  */
 
 (function (module) {
-	var Cloudant = require('../modules/cloudant');
+	var _ = require('lodash'),
+		Cloudant = require('../modules/cloudant');
 
 	module.exports = {
 		run: function (service, credentials, progress) {
 			return new Promise(function (resolve, reject) {
 
-				var products = require(process.cwd() + '/' + service.data),
-					database = service.db;
+				var products = require(process.cwd() + '/' + _.get(service, 'data')),
+					database = _.get(service, 'db'),
+					serviceName = _.get(service, 'name');
 
-				var c = new Cloudant(database, credentials.entity.credentials);
+				var c = new Cloudant(database, _.get(credentials, 'entity.credentials'));
 
 				c.dropDatabase().then(function () {
 					progress('Creating ' + database);
@@ -30,7 +32,7 @@
 					progress('Populating ' + database);
 					return c.uploadData(products);
 				}).then(function () {
-					resolve('Finished uploading data to ' + service.name);
+					resolve('Finished uploading data to ' + serviceName);
 				}).catch(function (e) {
 					reject(e);
 				});
