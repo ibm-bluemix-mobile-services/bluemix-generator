@@ -73,8 +73,7 @@
 				.end(function (err, res) {
 					if (!err) {
 						resolve(res);
-					}
-					else {
+					} else {
 						reject(err);
 					}
 				});
@@ -95,8 +94,7 @@
 				.end(function (err, res) {
 					if (!err) {
 						resolve(res);
-					}
-					else {
+					} else {
 						reject(err);
 					}
 				});
@@ -116,8 +114,7 @@
 				.end(function (err, res) {
 					if (!err) {
 						resolve(res);
-					}
-					else {
+					} else {
 						reject(err);
 					}
 				});

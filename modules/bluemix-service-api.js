@@ -152,7 +152,7 @@
 
 
 	BluemixServiceApi.prototype.createServiceInstance = function (space_guid, plan_guid, name) {
-		return this.api.post('/v2/service_instances?accepts_incomplete=true', {
+		return this.api.post('/v2/service_instances', {
 			"space_guid": space_guid,
 			"name": name,
 			"service_plan_guid": plan_guid,
