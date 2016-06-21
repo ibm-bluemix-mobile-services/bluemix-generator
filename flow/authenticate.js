@@ -22,11 +22,17 @@
 
 	var userConfig = {};
 
-	module.exports = function (templateConfig, serviceManager, bluemix) {
+	module.exports = function (templateConfig, serviceManager, bluemix, token) {
 
-		return bluemix.authenticateWithToken().catch(function () {
-			return bluemix.refreshToken();
-		}).catch(function () {
+		var promise = Promise.reject();
+
+		if(token) {
+			promise = bluemix.authenticateWithToken().catch(function () {
+				return bluemix.refreshToken();
+			});
+		}
+
+		return promise.catch(function () {
 			flasher.stop();
 			return inquirer.prompt([
 				{
