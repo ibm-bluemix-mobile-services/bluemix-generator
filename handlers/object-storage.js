@@ -22,35 +22,49 @@
 
 			return new Promise(function (resolve, reject) {
 
-				var os = new ObjectStorage(service.container, credentials.entity.credentials);
+				var sources = _.get(service, 'data');
 
-				os.validate().then(function () {
-					progress('Creating container ' + os.container);
-					return os.makeContainer();
-				}).then(function () {
-					var runner = new FastRunner(fs.readdirSync(service.data));
+				if(_.isArray(sources)) {
+					var runner = new FastRunner(sources);
 
-					runner.run(function (file) {
-						return new Promise(function (resolveChild) {
-							if (!fs.lstatSync(service.data + file).isDirectory()) {
-								progress('Uploading ' + file);
-								return os.uploadFile(service.data + file, file).then(function () {
-									resolveChild();
-								}).catch(function () {
-									// TODO: error uploading file:file
-									resolveChild();
-								});
-							}
+					runner.run(function (source) {
+						var containerName = source.name,
+								dataPath = source.path;
 
-							return resolveChild();
+						var os = new ObjectStorage(containerName, credentials.entity.credentials);
+
+						progress('Creating container ' + containerName);
+
+						return os.validate().then(function () {
+							return os.makeContainer();
+						}).then(function () {
+							var runner = new FastRunner(fs.readdirSync(dataPath));
+
+							return runner.run(function (file) {
+								if (!fs.lstatSync(dataPath + file).isDirectory()) {
+									progress('Uploading ' + file);
+									return os.uploadFile(dataPath + file, file).catch(function () {
+										// TODO: error uploading file:file display warning
+										return true;
+									});
+								}
+
+								return true;
+							}).then(function () {
+								return 'Finished uploading all files to ' + service.name;
+							}).catch(function (e) {
+								return Promise.reject(e);
+							});
 						});
-					}).then(function () {
-						resolve('Finished uploading all files to ' + service.name);
-					}).catch(function (e) {
-						// TODO: caught some error
-						reject(e);
+					}).then(function(response){
+						resolve(response);
+					}).catch(function(error){
+						reject(error);
 					});
-				});
+
+				} else {
+					reject('Invalid generator.json, data element requires an array of datasources.');
+				}
 			});
 		},
 		onError: function(service, error, progress){

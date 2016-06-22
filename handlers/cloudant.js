@@ -13,29 +13,44 @@
 
 (function (module) {
 	var _ = require('lodash'),
-		Cloudant = require('../modules/cloudant');
+		Cloudant = require('../modules/cloudant'),
+		FastRunner = require('../modules/fast-runner');
 
 	module.exports = {
 		run: function (service, credentials, progress) {
 			return new Promise(function (resolve, reject) {
 
-				var products = require(process.cwd() + '/' + _.get(service, 'data')),
-					database = _.get(service, 'db'),
-					serviceName = _.get(service, 'name');
+				var sources = _.get(service, 'data');
 
-				var c = new Cloudant(database, _.get(credentials, 'entity.credentials'));
+				if(_.isArray(sources)) {
+					var runner = new FastRunner(sources);
 
-				c.dropDatabase().then(function () {
-					progress('Creating ' + database);
-					return c.createDatabase();
-				}).then(function () {
-					progress('Populating ' + database);
-					return c.uploadData(products);
-				}).then(function () {
-					resolve('Finished uploading data to ' + serviceName);
-				}).catch(function (e) {
-					reject(e);
-				});
+					runner.run(function (source) {
+
+						var products = require(process.cwd() + '/' + _.get(source, 'path')),
+							database = _.get(source, 'name'),
+							serviceName = _.get(service, 'name');
+
+						var c = new Cloudant(database, _.get(credentials, 'entity.credentials'));
+
+						return c.dropDatabase().then(function () {
+							progress('Creating ' + database);
+							return c.createDatabase();
+						}).then(function () {
+							progress('Populating ' + database);
+							return c.uploadData(products);
+						}).then(function () {
+							return 'Finished uploading data to ' + serviceName;
+						});
+					}).then(function(response){
+						resolve(response);
+					}).catch(function(error){
+						reject(error)
+					});
+
+				} else {
+					reject('Invalid generator.json, data element requires an array of datasources.');
+				}
 			});
 		},
 		onError: function (service, error, progress) {
