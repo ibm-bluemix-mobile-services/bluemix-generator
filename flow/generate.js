@@ -206,6 +206,10 @@
 
 							var serviceName = prefs.get('name') + '-' + service.deployname;
 
+							if (_.get(service, "bindable", true)) {
+								generator.addService(serviceName);
+							}
+
 							if (!plan) {
 
 								flasher.stop();
@@ -230,10 +234,6 @@
 							}
 
 							flasher.progress("Provisioning " + service.name);
-
-							if (_.get(service, "bindable", true)) {
-								generator.addService(serviceName);
-							}
 
 							return bluemix.api().createServiceInstance(prefs.get('space.guid'), plan.guid, serviceName);
 						}).then(function (response) {
