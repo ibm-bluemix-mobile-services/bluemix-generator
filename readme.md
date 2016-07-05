@@ -83,7 +83,7 @@ The service event is triggered immediately after each service specified in the c
 The complete event triggers after the template is set up and services provisioned. Here we can specify instructions for how the user should run the new project.
 
 ### Examples
-The [examples/](examples) directory in this directory links to the current backends that are using the Bluemix Generator.
+The [examples/](examples) directory in this repository links to the current backends that are using the Bluemix Generator.
 
 ### Redeploying data
 
