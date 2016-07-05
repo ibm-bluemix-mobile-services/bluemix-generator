@@ -7,14 +7,14 @@ Generate backend templates for Bluemix
 
 
 ### Table of Contents
-* [CLI](#cli)
-* [Demo](#demo)
-* [Summary](#summary)
-* [Specifications](#specifications)
-* [Examples](#examples)
-* [Redeploying data](#redeploying-data)
-* [Contributing](#contributing)
-* [License](#license)
+ * [CLI](#cli)
+ * [Demo](#demo)
+ * [Summary](#summary)
+ * [Specifications](#specifications)
+ * [Examples](#examples)
+ * [Redeploying data](#redeploying-data)
+ * [Contributing](#contributing)
+ * [License](#license)
 
 ### CLI
 
