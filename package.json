@@ -1,8 +1,8 @@
 {
   "name": "bluemix-generator",
-  "appName": "Bluemix Backend Generator",
+  "appName": "Bluemix Generator",
   "version": "0.3.4",
-  "description": "This module generates backend templates using IBM Bluemix",
+  "description": "Generate backend templates for Bluemix",
   "main": "cli.js",
   "scripts": {},
   "bin": {
