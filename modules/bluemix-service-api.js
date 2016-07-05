@@ -50,9 +50,6 @@
 	BluemixServiceApi.prototype.getOrganizations = function () {
 		return this.api.get('/v2/organizations').then(function (response) {
 			return Promise.resolve(response.body.resources.map(function (e) {
-				if (e.entity.name === "IMF_Prod") {
-					e.entity.name = "playground";
-				}
 				return {
 					guid: e.metadata.guid,
 					name: e.entity.name
