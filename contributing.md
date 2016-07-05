@@ -12,7 +12,7 @@ Please raise any bug reports or feature requests on the issue tracker. Be sure t
 search the list to see if your issue has already been raised.
 
 A good bug report is one that make it easy for us to understand what you were
-trying to do and what went wrong. Provide as much context as possible so we can try to recreate the issue.
+trying to do, and what went wrong. Provide as much context as possible, so we can try to recreate the issue.
 
 ### Coding standards
 
