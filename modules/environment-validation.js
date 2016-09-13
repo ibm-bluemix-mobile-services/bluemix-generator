@@ -123,13 +123,17 @@
 		}
 
 		function validateGenerator(path) {
-			var generator = require(path);
+			try {
+				var generator = require(path);
 
-			return isConfigMissingProperties(generator).then(function () {
-				return areConfigServicesOK(generator);
-			}).then(function () {
-				return Promise.resolve(accessor(generator));
-			});
+				return isConfigMissingProperties(generator).then(function () {
+					return areConfigServicesOK(generator);
+				}).then(function () {
+					return Promise.resolve(accessor(generator));
+				});
+			} catch(e) {
+				return Promise.reject(-1);
+			}
 		}
 
 		return isCloudFoundryInstalled().then(function () {
@@ -139,7 +143,11 @@
 				});
 			}).then(function (config) {
 				return {status: 'generate', config: config};
-			}).catch(function () {
+			}).catch(function (error) {
+				if(error == -1) {
+					throw 'Invalid generator.json file.';
+				}
+
 				return isProjectDirectory().then(function (path) {
 					return validateGenerator(path);
 				}).then(function (config) {
