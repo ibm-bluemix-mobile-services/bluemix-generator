@@ -1,5 +1,5 @@
 <img src="readme/logo.png" alt="bluemix logo" width="300px"/>
- ## Bluemix Generator
+## Bluemix Generator
 Generate backend templates for Bluemix
 
 [![npm version](https://badge.fury.io/js/bluemix-generator.svg)](https://badge.fury.io/js/bluemix-generator)
