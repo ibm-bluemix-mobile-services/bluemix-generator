@@ -41,6 +41,8 @@
 				.end(function (err, res) {
 					if (!err && res.statusCode === 201) {
 						resolve();
+					} else if (res.statusCode === 202) {
+						resolve();
 					} else if (res.statusCode === 503) {
 						reject("The Cloudant NoSQL DB service is currently unavailable. Our technicians are working on fixing this issue as soon as possible. Please try running bluegen again at a later time.");
 					} else {
