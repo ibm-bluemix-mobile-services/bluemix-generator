@@ -29,6 +29,8 @@ var inquirer = require('inquirer'),
 	flowGenerate = require('./flow/generate'),
 	flowReload = require('./flow/reload'),
 	flowAuthenticate = require('./flow/authenticate'),
+	flowDeployConfig = require('./flow/deploy-config'),
+	flowOpenwhisk = require("./flow/openwhisk"),
 	regions = require('./config/regions');
 
 serviceManager.registerHandler('cloudantNoSQLDB', require('./handlers/cloudant'));
@@ -64,12 +66,18 @@ environmentValidation({root: userHome, home: appHome}).then(function (environmen
 	return serviceManager.fireEvent('validation').then(function () {
 		flasher.stop();
 		flasher.progress('Authenticating');
-		return flowAuthenticate(environment.config, serviceManager, bluemix);
+
+		return flowAuthenticate(environment.config, serviceManager, bluemix, process.env['BLUEGEN_TOKEN_AUTH']);
 	}).then(function (authParams) {
 		flasher.stop();
 
 		if (environment.status === 'generate') {
-			return flowGenerate(environment.config, serviceManager, bluemix, authParams);
+			return flowDeployConfig(environment.config, serviceManager, bluemix, authParams).then(function (deploySettings) {
+
+				return flowOpenwhisk(environment.config, serviceManager, bluemix, deploySettings).then(function () {
+					return flowGenerate(environment.config, serviceManager, bluemix, deploySettings);
+				});
+			});
 		} else if (environment.status === 'reload') {
 			return flowReload(environment.config, serviceManager);
 		} else {
