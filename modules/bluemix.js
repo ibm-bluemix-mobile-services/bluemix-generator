@@ -33,6 +33,9 @@
 		var authenticationCache = new Cache(config.root + '/.generator/token');
 
 		return {
+			getAuthTokens: function () {
+				return authenticationCache.load();
+			},
 			authenticateWithToken: function () {
 				return authenticationCache.exists().then(function () {
 					return authenticationCache.load();

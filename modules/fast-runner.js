@@ -20,7 +20,7 @@
 		var size = this.jobs.length;
 
 		if (size == 0) {
-			return Promise.reject('no services');
+			return Promise.resolve();
 		} else if (size == 1) {
 			return worker(this.jobs[0]);
 		} else {
