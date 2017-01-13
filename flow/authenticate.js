@@ -22,7 +22,7 @@
 
 	var userConfig = {};
 
-	module.exports = function (templateConfig, serviceManager, bluemix, token) {
+	module.exports = function (templateConfig, serviceManager, bluemix, token, cli) {
 
 		var promise = Promise.reject();
 
@@ -34,6 +34,35 @@
 
 		return promise.catch(function () {
 			flasher.stop();
+
+			if (cli.flags.username != null && cli.flags.username != true) {
+				userConfig.username = cli.flags.username;
+				if (cli.flags.password != null && cli.flags.password != true) {
+					return bluemix.login(userConfig.username, cli.flags.password).then( function(password) {
+						if (!password) {
+							console.log(chalk.red(">> ") + "Failed to login to Bluemix. Invalid credentials.");
+							process.exit(1);
+						}
+					});
+				} else {
+					return inquirer.prompt([
+						{
+							type: 'password',
+							name: 'password',
+							message: 'What is your Bluemix password?',
+							filter: function (password) {
+								return bluemix.login(userConfig.username, password);
+							},
+							validate: function (password) {
+								if (!password) {
+									return 'Failed to login to Bluemix. Please try again.';
+								}
+								return true;
+							}
+						}
+					])
+				}
+			}
 			return inquirer.prompt([
 				{
 					type: 'input',

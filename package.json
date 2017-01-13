@@ -36,6 +36,7 @@
     "lodash": "^4.11.1",
     "mem-fs": "^1.1.2",
     "mem-fs-editor": "^2.2.0",
+    "meow": "^3.7.0",
     "node-status": "^0.1.7",
     "pkgcloud": "^1.3.0",
     "run-async": "^2.2.0",

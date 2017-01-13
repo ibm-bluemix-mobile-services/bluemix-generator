@@ -16,6 +16,7 @@ var inquirer = require('inquirer'),
 	chalk = require("chalk"),
 	colors = require('colors'),
 	figures = require("figures"),
+	meow = require("meow"),
 	Bluemix = require('./modules/bluemix'),
 	flasher = require('./modules/flasher'),
 	fs = require("fs"),
@@ -43,6 +44,32 @@ environmentValidation({root: userHome, home: appHome}).then(function (environmen
 	console.log();
 	console.log(require('bluemix-logo'));
 
+	const cli = meow(`
+    Usage`
+    + chalk.green("\n      $ bluegen\n    ") +
+
+    `Options`
+      + chalk.green("\n      --username") + `, ` + chalk.green("-u  ") +  `Set your Bluemix username`
+      + chalk.green("\n      --password") + `, ` + chalk.green("-p  ") +  `Set your Bluemix password`
+      + chalk.green("\n      --region") + `, ` + chalk.green("  -r  ") +  `Set your Bluemix region (US South, United Kingdom, Sydney)`
+      + chalk.green("\n      --org") + `, ` + chalk.green("     -o  ") +  `Set your Bluemix organization`
+      + chalk.green("\n      --space") + `, ` + chalk.green("   -s  ") +  `Set your Bluemix space`
+      + chalk.green("\n      --name") + `, ` + chalk.green("    -n  ") +  `What you want to name your backend
+
+    Examples`
+       + chalk.green("\n      $ bluegen -u ") + chalk.yellow("jmeis@us.ibm.com ") + chalk.green("-r ") + chalk.yellow("ng ") + chalk.green("-o ") + chalk.yellow("jmeis@us.ibm.com ") + chalk.green("-s ") + chalk.yellow("dev ") + chalk.green("-n ") + chalk.yellow("mybackend\n      ") +
+      `🤖  Scaffolds a new project called "mybackend" 👾
+	`, {
+    alias: {
+        u: 'username',
+        p: 'password',
+        r: 'region',
+        o: 'org',
+        s: 'space',
+        n: 'name'
+    }
+	});
+
 	var appConfig = accessor(require('./package.json'));
 
 	console.log(chalk.cyan.bold(appConfig.get('appName')) + ' version ' + chalk.green(appConfig.get('version')) + '\n');
@@ -67,12 +94,12 @@ environmentValidation({root: userHome, home: appHome}).then(function (environmen
 		flasher.stop();
 		flasher.progress('Authenticating');
 
-		return flowAuthenticate(environment.config, serviceManager, bluemix, process.env['BLUEGEN_TOKEN_AUTH']);
+		return flowAuthenticate(environment.config, serviceManager, bluemix, process.env['BLUEGEN_TOKEN_AUTH'], cli);
 	}).then(function (authParams) {
 		flasher.stop();
 
 		if (environment.status === 'generate') {
-			return flowDeployConfig(environment.config, serviceManager, bluemix, authParams).then(function (deploySettings) {
+			return flowDeployConfig(environment.config, serviceManager, bluemix, authParams, cli).then(function (deploySettings) {
 
 				return flowOpenwhisk(environment.config, serviceManager, bluemix, deploySettings).then(function () {
 					return flowGenerate(environment.config, serviceManager, bluemix, deploySettings);
