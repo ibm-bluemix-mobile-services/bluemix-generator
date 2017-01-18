@@ -26,210 +26,195 @@
 	module.exports = function (templateConfig, serviceManager, bluemix, authParams, cli) {
 		userConfig = _.merge(authParams, userConfig);
 
-		var region = {
-			region: {}
-		};
-
 		return new Promise(function (resolve, reject) {
-			switch (cli.flags.region) {
-				case "US South":
-				case "ng":
-					region.region = regions[0];
-					resolve(region);
-					break;
-				case "United Kingdom":
-				case "eu-gb":
-					region.region = regions[1];
-					resolve(region);
-					break;
-				case "Sydney":
-				case "au-syd":
-					region.region = regions[2];
-					resolve(region);
-					break;
-				default:
-					return inquirer.prompt([
-						{
-							type: 'asyncList',
-							name: 'region',
-							message: 'What is your region?',
-							pull: function () {
-								return regions;
-							}
-						}
-					]).then(function (region) {
-						resolve(region);
-					});
-			}
-		}).then(function (response) {
 
-			userConfig = _.merge(response, userConfig);
+			return new Promise(function (resolve, reject) {
 
-			bluemix.api().updateEndpoint({
-				api: _.get(response, 'region.api')
-			});
+				var finalRegion = {
+					region: {}
+				};
 
-			return bluemix.api().getOrganizations();
-		}).then(function (orgs) {
-			if (orgs.length === 0) {
-				return Promise.reject('You don\'t have any organizations in this region. Please create a new org or select a different region.');
-			}
-
-			if (cli.flags.org != null && cli.flags.org != true) {
-				var flag = false;
-				orgs.forEach( function(org) {
-					if (org.name === cli.flags.org) {
-						flag = true;
-						userConfig.org = org;
+				if (cli.flags.region != null && cli.flags.region != true) {
+					switch (cli.flags.region) {
+						case "US South":
+						case "ng":
+							finalRegion.region = regions[0];
+							resolve(finalRegion);
+							break;
+						case "United Kingdom":
+						case "eu-gb":
+							finalRegion.region = regions[1];
+							resolve(finalRegion);
+							break;
+						case "Sydney":
+						case "au-syd":
+							finalRegion.region = regions[2];
+							resolve(finalRegion);
+							break;
+						default:
+							return inquirer.prompt([
+								{
+									type: 'asyncList',
+									name: 'region',
+									message: 'What is your region?',
+									pull: function () {
+										return regions;
+									}
+								}
+							]).then(function (region) {
+								resolve(region);
+							});
 					}
-				});
-
-				if (flag === false) {
-					console.log(chalk.red(">> ") + "Could not find specified org in this region. Please verify it exists and try again.");
-					process.exit(1);
+				} else {
+						return inquirer.prompt([
+							{
+								type: 'asyncList',
+								name: 'region',
+								message: 'What is your region?',
+								pull: function () {
+									return regions;
+								}
+							}
+						]).then(function (region) {
+							resolve(region);
+						});
 				}
+			}).then(function(region) {
+
+				userConfig = _.merge(region, userConfig);
+				bluemix.api().updateEndpoint({
+					api: _.get(region, 'region.api')
+				});
+				return bluemix.api().getOrganizations();
+			}).then(function (orgs) {
 
 				return new Promise(function (resolve, reject) {
 
-					if (cli.flags.space != null && cli.flags.space != true) {
-						bluemix.api().getSpaces(userConfig.org.guid).then(function (spaces) {
-							var flag = false;
-							spaces.forEach( function(space) {
-								if (space.name === cli.flags.space) {
-									flag = true;
-									userConfig.space = space;
-									resolve();
-								}
-							});
+					orgs.forEach( function(org) {
+						if (org.name === cli.flags.org) {
+							userConfig.org = org;
+						}
+					});
 
-							if (flag === false) {
-								console.log(chalk.red(">> ") + "Could not find specified space in this org. Please verify it exists and try again.");
-								process.exit(1);
-							}
-						});
+					if (cli.flags.org != null && cli.flags.org != true && userConfig.org != null) {
+						resolve(userConfig.org);
 					} else {
 						return inquirer.prompt([
-						{
-							type: 'asyncList',
-							pull: function () {
-								return bluemix.api().getSpaces(userConfig.org.guid);
-							},
-							filter: function (space) {
-								return userConfig.space = space;
-							},
-							hint: ' loading...',
-							name: 'space',
-							message: 'What space do you want to deploy to?',
-						}
-					]).then(function() {
-						resolve();
-					});
+							{
+								type: 'asyncList',
+								pull: function () {
+									return orgs;
+								},
+								filter: function (org) {
+									return userConfig.org = org;
+								},
+								hint: ' loading...',
+								name: 'org',
+								message: 'What organization would you like to use?'
+							}
+						]).then(function (org) {
+							resolve(org);
+						});
 					}
-				}).then( function() {
+				}).then(function(org) {
 
 					return new Promise(function (resolve, reject) {
-						if (cli.flags.name != null && cli.flags.name != true) {
-							util.validateAppName(cli.flags.name).then( function(name) {
-								if (name === -1) {
-									console.log(chalk.red(">> ") + "Sorry, name can only contain alphanumeric characters and dash character, must not begin or end with the dash character.");
-									proces.exit(1);
-								} else if (name === -2) {
-									console.log(chalk.red(">> ") + "Sorry, name cannot be more than 63 characters long.");
-									process.exit(1);
+
+						bluemix.api().getSpaces(userConfig.org.guid).then(function (spaces) {
+							spaces.forEach( function(space) {
+								if (space.name === cli.flags.space) {
+									userConfig.space = space;
+									resolve(userConfig.space);
 								}
-
-								bluemix.api().checkName(name, userConfig.region.guid).then( function(result) {
-									if (result === -3) {
-										console.log(chalk.red(">> ") + "Sorry, that name has already been taken.");
-										process.exit(1);
+							});
+						}).then(function() {
+							if (userConfig.space != null) {
+								resolve(userConfig.space);
+							} else {
+								return inquirer.prompt([
+									{
+										type: 'asyncList',
+										pull: function () {
+											return bluemix.api().getSpaces(userConfig.org.guid);
+										},
+										filter: function (space) {
+											return userConfig.space = space;
+										},
+										hint: ' loading...',
+										name: 'space',
+										message: 'What space do you want to deploy to?',
 									}
-									resolve();
+								]).then(function (space) {
+									resolve(space);
 								});
-							})
-						} else {
-							return inquirer.prompt([
-								{
-									type: 'input',
-									name: 'name',
-									message: 'What do you want to name this backend?',
-									filter: function (answer) {
-										return util.validateAppName(answer).then(function (name) {
-											return bluemix.api().checkName(name, userConfig.region.guid);
-										});
-									},
-									validate: function (value) {
-										if (_.size(value) > 0) {
-											return true;
-										} else if (value === -1) {
-											return 'Sorry, name can only contain alphanumeric characters and dash character, must not begin or end with the dash character.';
+							}
+						});
+					}).then(function(space) {
 
-										} else if (value === -2) {
-											return 'Sorry, name cannot be more than 63 characters long.';
+						return new Promise(function (resolve, reject) {
+
+							return new Promise(function (resolve, reject) {
+								if (cli.flags.name != null && cli.flags.name != true) {
+									util.validateAppName(cli.flags.name).then(function (name) {
+										if (name === -1) {
+											return false;
+										} else if (name === -2) {
+											return false;
 										}
 
-										return 'Sorry, that name already exists. Please try another name.';
-									}
+										return bluemix.api().checkName(name, userConfig.region.guid).then( function(result) {
+											if (result === -3) {
+												return false;
+											}
+											return name;
+										});
+									}).then(function(name) {
+										resolve(name);
+									});
+								} else {
+									resolve(false);
 								}
-							]).then( function() {
-								resolve();
+							}).then(function(name) {
+								if (name != false) {
+									resolve(name);
+								} else {
+									return inquirer.prompt([
+										{
+											type: 'input',
+											name: 'name',
+											message: 'What do you want to name this backend?',
+											filter: function (answer) {
+												return util.validateAppName(answer).then(function (name) {
+													return bluemix.api().checkName(name, userConfig.region.guid);
+												});
+											},
+											validate: function (value) {
+												if (_.size(value) > 0) {
+													return true;
+												} else if (value === -1) {
+													return 'Sorry, name can only contain alphanumeric characters and dash character, must not begin or end with the dash character.';
+
+												} else if (value === -2) {
+													return 'Sorry, name cannot be more than 63 characters long.';
+												}
+
+												return 'Sorry, that name already exists. Please try another name.';
+											}
+										}
+									]).then(function (name) {
+										resolve(name.name);
+									});
+								}
 							});
-						}
+						}).then(function (name) {
+							userConfig.name = name;
+							resolve();
+						});
 					});
 				});
-			}
-
-			return inquirer.prompt([
-				{
-					type: 'asyncList',
-					pull: function () {
-						return orgs;
-					},
-					filter: function (org) {
-						return userConfig.org = org;
-					},
-					hint: ' loading...',
-					name: 'org',
-					message: 'What organization would you like to use?'
-				},
-				{
-					type: 'asyncList',
-					pull: function () {
-						return bluemix.api().getSpaces(userConfig.org.guid);
-
-					},
-					filter: function (space) {
-						return userConfig.space = space;
-					},
-					hint: ' loading...',
-					name: 'space',
-					message: 'What space do you want to deploy to?',
-				},
-				{
-					type: 'input',
-					name: 'name',
-					message: 'What do you want to name this backend?',
-					filter: function (answer) {
-						return util.validateAppName(answer).then(function (name) {
-							return bluemix.api().checkName(name, userConfig.region.guid);
-						});
-					},
-					validate: function (value) {
-						if (_.size(value) > 0) {
-							return true;
-						} else if (value === -1) {
-							return 'Sorry, name can only contain alphanumeric characters and dash character, must not begin or end with the dash character.';
-
-						} else if (value === -2) {
-							return 'Sorry, name cannot be more than 63 characters long.';
-						}
-
-						return 'Sorry, that name already exists. Please try another name.';
-					}
-				}
-			]);
-
-		}).then(function(response){
-			return _.merge(response, userConfig);
+			});
+		}).then(function(){
+			return userConfig;
 		});
 	};
 })(module);
