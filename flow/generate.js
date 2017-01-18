@@ -221,7 +221,9 @@
 			return Promise.resolve(generator);
 		}).then(function (generator) {
 			return generator.createProject(templateConfig).then(function () {
-				return generator.createManifest();
+				if(templateConfig.get('runtime.manifest') != false) {
+					return generator.createManifest();
+				}
 			}).then(function () {
 				return serviceManager.fireEvent('complete', {home: generator.getProjectPath()});
 			});
