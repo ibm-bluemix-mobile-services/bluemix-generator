@@ -1,11 +1,10 @@
-<img src="readme/logo.png" alt="bluemix logo" width="300px"/>
+<img src="readme/logo.png" alt="bluemix logo" width="250px"/>
 
 ## Bluemix Generator
 Generate backend templates for Bluemix
 
-[![npm version](https://badge.fury.io/js/bluemix-generator.svg)](https://badge.fury.io/js/bluemix-generator)
-[![dependencies](https://david-dm.org/ibm-bluemix-mobile-services/bluemix-generator.svg?theme=shields.io)](https://david-dm.org/ibm-bluemix-mobile-services/bluemix-generator)
-
+[![](https://shields.eu-gb.mybluemix.net)](https://bluemix.net)
+[![](https://shields.eu-gb.mybluemix.net/ibm-bluemix-mobile-services/bluemix-generator)](https://travis-ci.org/ibm-bluemix-mobile-services/bluemix-generator)
 
 ### Table of Contents
  * [CLI](#cli)
